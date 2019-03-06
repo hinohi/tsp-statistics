@@ -24,15 +24,6 @@ fn l2(a: &[f64], b: &[f64]) -> f64 {
     s.sqrt()
 }
 
-fn l2_sq(a: &[f64], b: &[f64]) -> f64 {
-    let mut s = 0.0;
-    for (aa, bb) in a.iter().zip(b.iter()) {
-        let t = aa - bb;
-        s += t * t;
-    }
-    s
-}
-
 fn l_inf(a: &[f64], b: &[f64]) -> f64 {
     let mut s = 0.0;
     for (aa, bb) in a.iter().zip(b.iter()) {
@@ -48,7 +39,6 @@ fn l_inf(a: &[f64], b: &[f64]) -> f64 {
 pub enum DistType {
     L1,
     L2,
-    L2Sq,
     LInf,
 }
 
@@ -59,7 +49,6 @@ impl FromStr for DistType {
         match s.as_ref() {
             "l1" => Ok(DistType::L1),
             "l2" => Ok(DistType::L2),
-            "l2sq" | "l2_sq" => Ok(DistType::L2Sq),
             "linf" | "l_inf" => Ok(DistType::LInf),
             _ => Err(format!("unsupported type: {}", s)),
         }
@@ -87,7 +76,6 @@ impl TownDistance {
                 distance.push(match dist_type {
                     DistType::L1 => l1(a, b),
                     DistType::L2 => l2(a, b),
-                    DistType::L2Sq => l2_sq(a, b),
                     DistType::LInf => l_inf(a, b),
                 });
             }
@@ -117,14 +105,6 @@ mod tests {
         assert_eq!(l2(&[1.0], &[-1.5]), 2.5);
         assert_eq!(l2(&[1.0, -1.0], &[1.0, 1.0]), 2.0);
         assert_eq!(l2(&[0.0, 3.0, 0.0], &[0.0, 0.0, -4.0]), 5.0);
-    }
-
-    #[test]
-    fn test_l2_sq() {
-        assert_eq!(l2_sq(&[0.0], &[0.0]), 0.0);
-        assert_eq!(l2_sq(&[1.0], &[-1.5]), 2.5 * 2.5);
-        assert_eq!(l2_sq(&[1.0, -1.0], &[1.0, 1.0]), 4.0);
-        assert_eq!(l2_sq(&[0.0, 3.0, 0.0], &[0.0, 0.0, -4.0]), 25.0);
     }
 
     #[test]
